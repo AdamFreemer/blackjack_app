@@ -64,5 +64,12 @@
         <%= link_to "Official Bicycle Cards Rules", "https://bicyclecards.com/how-to-play/blackjack/", target: "_blank", class: "text-blue-600 hover:text-blue-800 underline" %>
       </p>
     </div>
+
+    <!-- Page Info -->
+    <div class="mt-6 pt-4 border-t border-gray-200">
+      <p class="text-xs text-gray-400 text-center">
+        Last accessed: <%= Time.current.strftime("%Y-%m-%d %H:%M:%S %Z") %> | IP: <%= request.remote_ip %>
+      </p>
+    </div>
   </div>
 </div>
