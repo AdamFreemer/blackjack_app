@@ -2,6 +2,10 @@
 
 A Blackjack game built with Ruby on Rails following official Bicycle Cards rules.
 
+## Live Demo
+
+**Play now:** [https://blackjack-party-3c126e433859.herokuapp.com/](https://blackjack-party-3c126e433859.herokuapp.com/)
+
 ### Payouts
 - **Blackjack (Natural)**: 3:2 payout (bet + 1.5× bet)
 - **Regular Win**: 1:1 payout (bet + bet)
