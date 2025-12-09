@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-green-800 p-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header with balance and bet -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <p class="text-sm text-gray-600">Balance</p>
+          <p class="text-2xl font-bold text-green-600">$<%= @game.player_balance %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">Current Bet</p>
+          <p class="text-2xl font-bold text-blue-600">$<%= @game.current_bet %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Board -->
+    <div class="bg-green-700 rounded-lg shadow-xl p-8 mb-4">
+      <!-- Dealer Section -->
+      <div class="mb-8">
+        <h2 class="text-white text-xl font-semibold mb-4">
+          Dealer
+          <span class="text-sm font-normal">
+            (<%= @game.dealer_hidden_card? ? @game.visible_dealer_score : @game.dealer_score %>)
+          </span>
+        </h2>
+        <div class="flex gap-2 flex-wrap">
+          <% @game.dealer_hand.each_with_index do |card, index| %>
+            <% if index == 1 && @game.dealer_hidden_card? %>
+              <!-- Hidden card -->
+              <div class="w-20 h-28 bg-blue-900 border-2 border-white rounded-lg flex items-center justify-center">
+                <div class="text-white text-4xl">?</div>
+              </div>
+            <% else %>
+              <!-- Visible card -->
+              <div class="w-20 h-28 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-center p-2">
+                <div class="text-3xl font-bold <%= card['suit'].in?(['♥', '♦']) ? 'text-red-600' : 'text-black' %>">
+                  <%= card['rank'] %>
+                </div>
+                <div class="text-2xl <%= card['suit'].in?(['♥', '♦']) ? 'text-red-600' : 'text-black' %>">
+                  <%= card['suit'] %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Player Section -->
+      <div>
+        <h2 class="text-white text-xl font-semibold mb-4">
+          You
+          <span class="text-sm font-normal">(<%= @game.player_score %>)</span>
+        </h2>
+        <div class="flex gap-2 flex-wrap">
+          <% @game.player_hand.each do |card| %>
+            <div class="w-20 h-28 bg-white border-2 border-gray-300 rounded-lg flex flex-col items-center justify-center p-2">
+              <div class="text-3xl font-bold <%= card['suit'].in?(['♥', '♦']) ? 'text-red-600' : 'text-black' %>">
+                <%= card['rank'] %>
+              </div>
+              <div class="text-2xl <%= card['suit'].in?(['♥', '♦']) ? 'text-red-600' : 'text-black' %>">
+                <%= card['suit'] %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Message -->
+    <% if @game.finished? %>
+      <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+        <div class="text-center">
+          <% case @game.result %>
+          <% when 'player_blackjack' %>
+            <h3 class="text-3xl font-bold text-green-600 mb-2">🎉 BLACKJACK! 🎉</h3>
+            <p class="text-gray-700">You won $<%= (@game.current_bet * 1.5).to_i %>!</p>
+          <% when 'player_wins' %>
+            <h3 class="text-3xl font-bold text-green-600 mb-2">You Win!</h3>
+            <p class="text-gray-700">You won $<%= @game.current_bet %>!</p>
+          <% when 'dealer_blackjack' %>
+            <h3 class="text-3xl font-bold text-red-600 mb-2">Dealer Blackjack</h3>
+            <p class="text-gray-700">You lost $<%= @game.current_bet %></p>
+          <% when 'dealer_wins' %>
+            <h3 class="text-3xl font-bold text-red-600 mb-2">Dealer Wins</h3>
+            <p class="text-gray-700">You lost $<%= @game.current_bet %></p>
+          <% when 'push' %>
+            <h3 class="text-3xl font-bold text-blue-600 mb-2">Push</h3>
+            <p class="text-gray-700">It's a tie! Your bet was returned.</p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4">
+      <% if @game.can_hit? %>
+        <%= button_to "Hit", hit_game_path(@game), method: :post, class: "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200" %>
+      <% end %>
+
+      <% if @game.can_stand? %>
+        <%= button_to "Stand", stand_game_path(@game), method: :post, class: "flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200" %>
+      <% end %>
+
+      <% if @game.finished? %>
+        <%= link_to "New Round", new_game_path, class: "flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 text-center" %>
+      <% end %>
+    </div>
+  </div>
+</div>
