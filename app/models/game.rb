@@ -24,7 +24,7 @@ class Game < ApplicationRecord
   # Public methods
 
   def place_bet(amount)
-    raise StandardError, "Cannot place bet at this time" unless can_bet?
+    raise StandardError, "Cannot place bet at this time" unless betting?
     raise ArgumentError, "Bet must be greater than 0" if amount <= 0
     raise ArgumentError, "Insufficient balance" if amount > player_balance
 
@@ -44,7 +44,7 @@ class Game < ApplicationRecord
     self.player_hand << draw_card
     self.dealer_hand << draw_card
 
-    self.status = 'player_turn'
+    self.status = "player_turn"
     save!
   end
 
@@ -52,8 +52,8 @@ class Game < ApplicationRecord
     self.player_hand << draw_card
 
     if player_score > 21
-      self.status = 'finished'
-      self.result = 'dealer_wins'
+      self.status = "finished"
+      self.result = "dealer_wins"
       payout
     end
 
@@ -61,7 +61,7 @@ class Game < ApplicationRecord
   end
 
   def player_stand
-    self.status = 'dealer_turn'
+    self.status = "dealer_turn"
     save!
 
     # Dealer plays
@@ -93,28 +93,16 @@ class Game < ApplicationRecord
     betting? || player_turn?
   end
 
-  def can_hit?
-    player_turn?
-  end
-
-  def can_stand?
-    player_turn?
-  end
-
-  def can_bet?
-    betting?
-  end
-
   private
 
   def build_deck
-    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-    suits = ['♠', '♥', '♦', '♣']
+    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+    suits = ["♠", "♥", "♦", "♣"]
 
     cards = []
     suits.each do |suit|
       ranks.each do |rank|
-        cards << { 'rank' => rank, 'suit' => suit }
+        cards << { "rank" => rank, "suit" => suit }
       end
     end
 
@@ -132,12 +120,12 @@ class Game < ApplicationRecord
     aces = 0
 
     hand.each do |card|
-      rank = card['rank']
+      rank = card["rank"]
 
-      if rank == 'A'
+      if rank == "A"
         aces += 1
         total += 11
-      elsif ['K', 'Q', 'J'].include?(rank)
+      elsif ["K", "Q", "J"].include?(rank)
         total += 10
       else
         total += rank.to_i
@@ -159,33 +147,33 @@ class Game < ApplicationRecord
   end
 
   def resolve_game
-    self.status = 'finished'
+    self.status = "finished"
 
-    player_bj = is_blackjack?(player_hand)
-    dealer_bj = is_blackjack?(dealer_hand)
+    player_blackjack = blackjack?(player_hand)
+    dealer_blackjack = blackjack?(dealer_hand)
 
     # Both blackjack = push
-    if player_bj && dealer_bj
-      self.result = 'push'
+    if player_blackjack && dealer_blackjack
+      self.result = "push"
     # Player blackjack beats dealer
-    elsif player_bj
-      self.result = 'player_blackjack'
+    elsif player_blackjack
+      self.result = "player_blackjack"
     # Dealer blackjack beats player
-    elsif dealer_bj
-      self.result = 'dealer_blackjack'
+    elsif dealer_blackjack
+      self.result = "dealer_blackjack"
     # Player busted
     elsif player_score > 21
-      self.result = 'dealer_wins'
+      self.result = "dealer_wins"
     # Dealer busted
     elsif dealer_score > 21
-      self.result = 'player_wins'
+      self.result = "player_wins"
     # Compare scores
     elsif player_score > dealer_score
-      self.result = 'player_wins'
+      self.result = "player_wins"
     elsif dealer_score > player_score
-      self.result = 'dealer_wins'
+      self.result = "dealer_wins"
     else
-      self.result = 'push'
+      self.result = "push"
     end
 
     payout
@@ -193,21 +181,21 @@ class Game < ApplicationRecord
 
   def payout
     case result
-    when 'player_blackjack'
+    when "player_blackjack"
       # Blackjack pays 3:2 (bet + 1.5x bet)
       self.player_balance += (current_bet * 2.5).to_i
-    when 'player_wins'
+    when "player_wins"
       # Regular win pays 1:1 (bet + bet)
       self.player_balance += current_bet * 2
-    when 'push'
+    when "push"
       # Return the bet
       self.player_balance += current_bet
-    when 'dealer_wins', 'dealer_blackjack'
+    when "dealer_wins", "dealer_blackjack"
       # Bet already deducted, no payout
     end
   end
 
-  def is_blackjack?(hand)
+  def blackjack?(hand)
     return false unless hand.length == 2
     calculate_hand_value(hand) == 21
   end

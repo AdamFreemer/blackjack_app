@@ -350,72 +350,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#can_hit?' do
-    let(:game) { Game.create! }
 
-    it 'returns true during player turn' do
-      game.status = 'player_turn'
-      expect(game.can_hit?).to be true
-    end
-
-    it 'returns false during betting' do
-      game.status = 'betting'
-      expect(game.can_hit?).to be false
-    end
-
-    it 'returns false during dealer turn' do
-      game.status = 'dealer_turn'
-      expect(game.can_hit?).to be false
-    end
-
-    it 'returns false when finished' do
-      game.status = 'finished'
-      expect(game.can_hit?).to be false
-    end
-  end
-
-  describe '#can_stand?' do
-    let(:game) { Game.create! }
-
-    it 'returns true during player turn' do
-      game.status = 'player_turn'
-      expect(game.can_stand?).to be true
-    end
-
-    it 'returns false during betting' do
-      game.status = 'betting'
-      expect(game.can_stand?).to be false
-    end
-
-    it 'returns false during dealer turn' do
-      game.status = 'dealer_turn'
-      expect(game.can_stand?).to be false
-    end
-
-    it 'returns false when finished' do
-      game.status = 'finished'
-      expect(game.can_stand?).to be false
-    end
-  end
-
-  describe '#can_bet?' do
-    let(:game) { Game.create! }
-
-    it 'returns true during betting' do
-      game.status = 'betting'
-      expect(game.can_bet?).to be true
-    end
-
-    it 'returns false during player turn' do
-      game.status = 'player_turn'
-      expect(game.can_bet?).to be false
-    end
-
-    it 'returns false when finished' do
-      game.status = 'finished'
-      expect(game.can_bet?).to be false
-    end
-  end
 
   describe '#place_bet' do
     let(:game) { Game.create!(player_balance: 1000) }
@@ -735,7 +670,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#is_blackjack?' do
+  describe '#blackjack?' do
     let(:game) { Game.create! }
 
     it 'returns true for ace and 10' do
@@ -743,7 +678,7 @@ RSpec.describe Game, type: :model do
         { 'rank' => 'A', 'suit' => '♠' },
         { 'rank' => '10', 'suit' => '♥' }
       ]
-      expect(game.send(:is_blackjack?, hand)).to be true
+      expect(game.send(:blackjack?, hand)).to be true
     end
 
     it 'returns true for ace and face card' do
@@ -751,7 +686,7 @@ RSpec.describe Game, type: :model do
         { 'rank' => 'A', 'suit' => '♠' },
         { 'rank' => 'K', 'suit' => '♥' }
       ]
-      expect(game.send(:is_blackjack?, hand)).to be true
+      expect(game.send(:blackjack?, hand)).to be true
     end
 
     it 'returns false for 21 with more than 2 cards' do
@@ -760,7 +695,7 @@ RSpec.describe Game, type: :model do
         { 'rank' => '7', 'suit' => '♥' },
         { 'rank' => '7', 'suit' => '♦' }
       ]
-      expect(game.send(:is_blackjack?, hand)).to be false
+      expect(game.send(:blackjack?, hand)).to be false
     end
 
     it 'returns false for non-21 with 2 cards' do
@@ -768,7 +703,7 @@ RSpec.describe Game, type: :model do
         { 'rank' => 'K', 'suit' => '♠' },
         { 'rank' => '9', 'suit' => '♥' }
       ]
-      expect(game.send(:is_blackjack?, hand)).to be false
+      expect(game.send(:blackjack?, hand)).to be false
     end
   end
 end

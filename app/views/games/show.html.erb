@@ -94,11 +94,8 @@
 
     <!-- Action Buttons -->
     <div class="flex gap-4">
-      <% if @game.can_hit? %>
+      <% if @game.player_turn? %>
         <%= button_to "Hit", hit_game_path(@game), method: :post, class: "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200" %>
-      <% end %>
-
-      <% if @game.can_stand? %>
         <%= button_to "Stand", stand_game_path(@game), method: :post, class: "flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200" %>
       <% end %>
 
